@@ -16,7 +16,7 @@ package vga_package is
 	constant COLOR_GREY		: color_type := X"888";
 	constant COLOR_MAGENTA	: color_type := X"F0F";	
 	
-	---- COLORI SUPPLEMENTARI ---- 
+	---- COLORI SUPPLEMENTARI ---- --
 	
 	constant COLOR_BROWN 	: color_type := X"200";
 end package;
