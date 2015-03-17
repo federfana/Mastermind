@@ -18,7 +18,7 @@ entity box_view is
 		pixel_y : in integer range 0 to 500;
 		number	: in integer range 0 to 2500;		
 		color	: OUT STD_LOGIC_VECTOR(11 downto 0);
-		-- segnale che indica alla view quando va disegnato il box
+		-- segnale che indica alla view quando va disegnato il box-
 		drawBox : OUT STD_LOGIC := '0'
 	);
 end box_view;
