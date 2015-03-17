@@ -54,7 +54,7 @@ architecture RTL of mastermind is
 	signal enable_check			: 	std_logic;
 	signal user_victory			:	std_logic;
 	signal random_num				: std_logic_vector(2 downto 0);
-	signal cnt 					: std_logic; 
+	signal cnt 					: integer range 7 to 0 ; 
 	
 	
 begin

@@ -17,7 +17,7 @@ entity mastermind_view is
 		VGA_VS              : out std_logic;
 		KEY                 : in  std_logic_vector(3 downto 0);
 		LEDG				  		:out std_LOGIC_VECTOR(7 downto 0);
-		COUNT 					:inout std_logic; 
+		COUNT 					: inout integer range 0 to 7; 
 		--CONNECTION FOR THE CONTROLLER
 		INSERT_ATTEMPT : out code;
 		ENABLE_CHECK	: out std_logic;
@@ -55,8 +55,12 @@ architecture RTL of mastermind_view is
 	signal colorM				: STD_LOGIC_VECTOR(11 downto 0);
 	signal sel					: std_logic;
 	signal selez				: STD_LOGIC_VECTOR(11 downto 0);
-	signal cnt : std_logic;
-	signal led : std_logic;
+	signal cnt            : integer range 0 to 7 :=0;
+	signal xpos : integer range 0 to 1000 := 558;
+	signal ypos : integer range 0 to 1000 := 98;
+	signal dimX : integer range 0 to 1000;
+	signal dimY : integer range 0 to 1000;
+	signal number : integer range 0 to 1000;
 begin
 
 BOARD1: entity work.box_view
@@ -231,24 +235,20 @@ PALETTAMAGENTA: entity work.box_view
 		color	=> colorM
 	);
 	
-SELEZIONATORE: entity work.box_view
- generic map
-	(
-		XPOS => 558,
-		YPOS => 100,
-		SPES => 2,
-		DIMX => 22,
-		DIMY => 22
-	)
+SELEZIONATORE: entity work.dinamic_selectors
 	port map
 	(
+		XPOS => xpos,
+		YPOS => ypos,
+		SPES => 2,
+		DIMX => 2,
+		DIMY => 2,
 		pixel_x => h_cnt,
 		pixel_y => v_cnt,
-		number 	=> 2,
+		number 	=> 9,
 		drawbox => sel,
 		color	=> selez 
-	);
-	
+);
 	
 	
 
@@ -287,8 +287,7 @@ WAIT UNTIL(CLOCK'EVENT) AND (CLOCK = '1');
 --			leds1 <= "0000000";
 --			leds2 <= "0000000";
 --			leds3 <= "0000000";
---			leds4 <= "0000000";			ù
-			
+--			leds4 <= "0000000";			
 		END IF;
 		
 
@@ -337,6 +336,13 @@ WAIT UNTIL(CLOCK'EVENT) AND (CLOCK = '1');
 				red_signal(3 downto 0) 	:= colorM(11 downto 8); 		
 				green_signal(3 downto 0):= colorM(7 downto 4);  
 				blue_signal(3 downto 0) := colorM(3 downto 0);	
+		end if;
+		
+		
+		if(sel='1') then
+				red_signal(3 downto 0)  := selez(11 downto 8); 		
+				green_signal(3 downto 0)  := selez(7 downto 4);  
+				blue_signal(3 downto 0)  := selez(3 downto 0);
 		end if;
 		
 
@@ -421,18 +427,48 @@ end process;
  key_press : process 
  begin 
 	if(RESET_N='0')then
-		cnt<='0';
+		cnt<= 0;
+		xpos <= 558;
+		ypos <= 98;
 	end if;
 	 wait until KEY(0)='0' and KEY(0)'EVENT; 
-		if(cnt='0') then
-			cnt <='1';
-		else 
-			cnt<='0';
-		end if;
+		case COUNT is
+			when 0 => 
+				xpos <= 558;
+				ypos <= 98;
+				cnt <= cnt + 1;
+			when 1 =>
+				xpos <= 558;
+				ypos <= 128;
+				cnt <= cnt + 1;
+			when 2 =>
+				xpos <= 558;
+				ypos <= 158;
+				cnt <= cnt + 1;
+			when 3 =>
+				xpos <= 558;
+				ypos <= 188;
+				cnt <= cnt + 1;
+			when 4 =>
+				xpos <= 558;
+				ypos <= 218;
+				cnt <= cnt + 1;
+			when 5 =>
+				xpos <= 558;
+				ypos <= 248;
+				cnt <= cnt + 1;
+			when 6 =>
+				xpos <= 558;
+				ypos <= 278;
+				cnt <= cnt + 1;
+			when 7 =>
+				xpos <= 558;
+				ypos <= 308;
+				cnt <= 0;
+		end case;
  end process;
  
 COUNT <= cnt;
-LEDG(0) <= COUNT;
 
 	
 end architecture;
