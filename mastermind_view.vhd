@@ -16,7 +16,8 @@ entity mastermind_view is
 		VGA_HS              : out std_logic;
 		VGA_VS              : out std_logic;
 		KEY                 : in  std_logic_vector(3 downto 0);
-		
+		LEDG				  		:out std_LOGIC_VECTOR(7 downto 0);
+		COUNT 					:inout std_logic; 
 		--CONNECTION FOR THE CONTROLLER
 		INSERT_ATTEMPT : out code;
 		ENABLE_CHECK	: out std_logic;
@@ -37,24 +38,25 @@ architecture RTL of mastermind_view is
 	signal b2					: std_logic;
 	signal colorB2				: STD_LOGIC_VECTOR(11 downto 0);
 	signal palR					: std_logic;
-	signal colorR			: STD_LOGIC_VECTOR(11 downto 0);
-	signal palO				: std_logic;
-	signal colorO			: STD_LOGIC_VECTOR(11 downto 0);
-	signal palG			: std_logic;
-	signal colorG			: STD_LOGIC_VECTOR(11 downto 0);
-	signal palB				: std_logic;
-	signal colorB			: STD_LOGIC_VECTOR(11 downto 0);
-	signal palY				: std_logic;
-	signal colorY			: STD_LOGIC_VECTOR(11 downto 0);
-	signal palC				: std_logic;
-	signal colorC			: STD_LOGIC_VECTOR(11 downto 0);
+	signal colorR				: STD_LOGIC_VECTOR(11 downto 0);
+	signal palO					: std_logic;
+	signal colorO				: STD_LOGIC_VECTOR(11 downto 0);
+	signal palG					: std_logic;
+	signal colorG				: STD_LOGIC_VECTOR(11 downto 0);
+	signal palB					: std_logic;
+	signal colorB				: STD_LOGIC_VECTOR(11 downto 0);
+	signal palY					: std_logic;
+	signal colorY				: STD_LOGIC_VECTOR(11 downto 0);
+	signal palC					: std_logic;
+	signal colorC				: STD_LOGIC_VECTOR(11 downto 0);
 	signal palGR				: std_logic;
-	signal colorGR			: STD_LOGIC_VECTOR(11 downto 0);
-	signal palM				: std_logic;
-	signal colorM			: STD_LOGIC_VECTOR(11 downto 0);
-	signal sel				: std_logic;
-	signal selez			: STD_LOGIC_VECTOR(11 downto 0);
-
+	signal colorGR				: STD_LOGIC_VECTOR(11 downto 0);
+	signal palM					: std_logic;
+	signal colorM				: STD_LOGIC_VECTOR(11 downto 0);
+	signal sel					: std_logic;
+	signal selez				: STD_LOGIC_VECTOR(11 downto 0);
+	signal cnt : std_logic;
+	signal led : std_logic;
 begin
 
 BOARD1: entity work.box_view
@@ -285,7 +287,8 @@ WAIT UNTIL(CLOCK'EVENT) AND (CLOCK = '1');
 --			leds1 <= "0000000";
 --			leds2 <= "0000000";
 --			leds3 <= "0000000";
---			leds4 <= "0000000";
+--			leds4 <= "0000000";			ù
+			
 		END IF;
 		
 
@@ -336,14 +339,7 @@ WAIT UNTIL(CLOCK'EVENT) AND (CLOCK = '1');
 				blue_signal(3 downto 0) := colorM(3 downto 0);	
 		end if;
 		
-		if(KEY(0)='0' and v_cnt<=480 and h_cnt<=640) then
-				red_signal:="1111";
-				green_signal:="1111";
-				blue_signal:="1111";
-		end if;
-	
-	  
-	
+
 	----- FINE DISEGNO BOX --------
 --gridOn <= '1' when ((unsigned(pixel_y) > 40 and unsigned(pixel_y) <= 440) and (unsigned(pixel_x) > 120 and unsigned(pixel_x) <=520)) 
 	--else '0';
@@ -420,10 +416,23 @@ WAIT UNTIL(CLOCK'EVENT) AND (CLOCK = '1');
 	VGA_HS			<= h_sync;
 	VGA_VS			<= v_sync;
 
-
 end process; 
 
-		
+ key_press : process 
+ begin 
+	if(RESET_N='0')then
+		cnt<='0';
+	end if;
+	 wait until KEY(0)='0' and KEY(0)'EVENT; 
+		if(cnt='0') then
+			cnt <='1';
+		else 
+			cnt<='0';
+		end if;
+ end process;
+ 
+COUNT <= cnt;
+LEDG(0) <= COUNT;
 
-		
+	
 end architecture;
