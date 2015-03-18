@@ -17,7 +17,6 @@ entity mastermind_view is
 		VGA_VS              : out std_logic;
 		KEY                 : in  std_logic_vector(3 downto 0);
 		LEDG				  		:out std_LOGIC_VECTOR(7 downto 0);
-		COUNT 					: inout integer range 0 to 7; 
 		--CONNECTION FOR THE CONTROLLER
 		INSERT_ATTEMPT : out code;
 		ENABLE_CHECK	: out std_logic;
@@ -53,14 +52,17 @@ architecture RTL of mastermind_view is
 	signal colorGR				: STD_LOGIC_VECTOR(11 downto 0);
 	signal palM					: std_logic;
 	signal colorM				: STD_LOGIC_VECTOR(11 downto 0);
-	signal sel					: std_logic;
-	signal selez				: STD_LOGIC_VECTOR(11 downto 0);
-	signal cnt            : integer range 0 to 7 :=0;
-	signal xpos : integer range 0 to 1000 := 558;
-	signal ypos : integer range 0 to 1000 := 98;
-	signal dimX : integer range 0 to 1000;
-	signal dimY : integer range 0 to 1000;
-	signal number : integer range 0 to 1000;
+	signal draw_sel			: std_logic;
+	signal color_sel			: STD_LOGIC_VECTOR(11 downto 0);
+	signal counter_sel            	: integer range 0 to 7 :=0; 
+	signal ypos_sel 						: integer range 0 to 1000 := 98;
+	signal draw_sel_griglia				: std_logic;
+	signal color_sel_griglia			: STD_LOGIC_VECTOR(11 downto 0);
+	signal counter_sel_griglia       : integer range 0 to 3 :=0; 
+	signal ypos_sel_griglia 			: integer range 0 to 1000:= 24;
+	signal xpos_sel_griglia 			: integer range 0 to 1000:=52;
+	
+	
 begin
 
 BOARD1: entity work.box_view
@@ -68,7 +70,6 @@ BOARD1: entity work.box_view
 	(
 		XPOS => 50,
 		YPOS => 22,
-		SPES => 0,
 		DIMX => 220,
 		DIMY => 436
 	)
@@ -86,7 +87,6 @@ BOARD2: entity work.box_view
 	(
 		XPOS => 320,
 		YPOS => 22,
-		SPES => 0,
 		DIMX => 220,
 		DIMY => 436
 	)
@@ -103,7 +103,6 @@ PALETTAROSSA: entity work.box_view
 	(
 		XPOS => 560,
 		YPOS => 100,
-		SPES => 0,
 		DIMX => 20,
 		DIMY => 20
 	)
@@ -120,7 +119,6 @@ PALETTAARANCIO: entity work.box_view
 	(
 		XPOS => 560,
 		YPOS => 130,
-		SPES => 0,
 		DIMX => 20,
 		DIMY => 20
 	)
@@ -137,7 +135,6 @@ PALETTAGREEN: entity work.box_view
 	(
 		XPOS => 560,
 		YPOS => 160,
-		SPES => 0,
 		DIMX => 20,
 		DIMY => 20
 	)
@@ -154,7 +151,6 @@ PALETTABLUE: entity work.box_view
 	(
 		XPOS => 560,
 		YPOS => 190,
-		SPES => 0,
 		DIMX => 20,
 		DIMY => 20
 	)
@@ -171,7 +167,6 @@ PALETTAYELLOW: entity work.box_view
 	(
 		XPOS => 560,
 		YPOS => 220,
-		SPES => 0,
 		DIMX => 20,
 		DIMY => 20
 	)
@@ -188,7 +183,6 @@ PALETTACYAN: entity work.box_view
 	(
 		XPOS => 560,
 		YPOS => 250,
-		SPES => 0,
 		DIMX => 20,
 		DIMY => 20
 	)
@@ -205,7 +199,6 @@ PALETTAGREY: entity work.box_view
 	(
 		XPOS => 560,
 		YPOS => 280,
-		SPES => 0,
 		DIMX => 20,
 		DIMY => 20
 	)
@@ -222,7 +215,6 @@ PALETTAMAGENTA: entity work.box_view
 	(
 		XPOS => 560,
 		YPOS => 310,
-		SPES => 0,
 		DIMX => 20,
 		DIMY => 20
 	)
@@ -235,20 +227,49 @@ PALETTAMAGENTA: entity work.box_view
 		color	=> colorM
 	);
 	
-SELEZIONATORE: entity work.dinamic_selectors
+SELEZIONATORE_COLORE: entity work.dinamic_selectors
 	port map
 	(
-		XPOS => xpos,
-		YPOS => ypos,
+		XPOS => 558,
+		YPOS => ypos_sel,
 		SPES => 2,
-		DIMX => 2,
-		DIMY => 2,
+		DIMX => 22,
+		DIMY => 22,
+		pixel_x => h_cnt,
+		pixel_y => v_cnt,
+		number 	=> 10,
+		drawbox => draw_sel,
+		color	=> color_sel 
+);
+
+SELEZIONATORE_GRIGLIA: entity work.dinamic_selectors
+	port map
+	(
+		XPOS => xpos_sel_griglia,
+		YPOS => ypos_sel_griglia,
+		SPES => 2,
+		DIMX => 52,
+		DIMY => 52,
 		pixel_x => h_cnt,
 		pixel_y => v_cnt,
 		number 	=> 9,
-		drawbox => sel,
-		color	=> selez 
+		drawbox => draw_sel_griglia,
+		color	=> color_sel_griglia 
 );
+
+--RIGA1_BOARD1 : entity work.righe_board
+--port map
+--(
+--		XPOS => xpos_sel_griglia,
+--		YPOS => ypos_sel_griglia,
+--		SPES => 2,
+--		DIMX => 52,
+--		DIMY => 52,
+--		pixel_x => h_cnt,
+--		pixel_y => v_cnt,
+--		number 	=> 9,
+--		drawbox => draw_sel_griglia
+--);
 	
 	
 
@@ -339,10 +360,16 @@ WAIT UNTIL(CLOCK'EVENT) AND (CLOCK = '1');
 		end if;
 		
 		
-		if(sel='1') then
-				red_signal(3 downto 0)  := selez(11 downto 8); 		
-				green_signal(3 downto 0)  := selez(7 downto 4);  
-				blue_signal(3 downto 0)  := selez(3 downto 0);
+		if(draw_sel='1') then
+				red_signal(3 downto 0)  := color_sel(11 downto 8); 		
+				green_signal(3 downto 0)  := color_sel(7 downto 4);  
+				blue_signal(3 downto 0)  := color_sel(3 downto 0);
+		end if;
+		
+		if(draw_sel_griglia='1') then
+				red_signal(3 downto 0)  := color_sel_griglia(11 downto 8); 		
+				green_signal(3 downto 0)  := color_sel_griglia(7 downto 4);  
+				blue_signal(3 downto 0)  := color_sel_griglia(3 downto 0);
 		end if;
 		
 
@@ -424,51 +451,65 @@ WAIT UNTIL(CLOCK'EVENT) AND (CLOCK = '1');
 
 end process; 
 
- key_press : process 
+ key0_press : process 
  begin 
 	if(RESET_N='0')then
-		cnt<= 0;
-		xpos <= 558;
-		ypos <= 98;
+		counter_sel<= 0;
+		ypos_sel <= 98;
 	end if;
 	 wait until KEY(0)='0' and KEY(0)'EVENT; 
-		case COUNT is
+		case counter_sel is
 			when 0 => 
-				xpos <= 558;
-				ypos <= 98;
-				cnt <= cnt + 1;
+				ypos_sel <= 98;
+				counter_sel <= counter_sel + 1;
 			when 1 =>
-				xpos <= 558;
-				ypos <= 128;
-				cnt <= cnt + 1;
+				ypos_sel <= 128;
+				counter_sel <= counter_sel + 1;
 			when 2 =>
-				xpos <= 558;
-				ypos <= 158;
-				cnt <= cnt + 1;
+				ypos_sel <= 158;
+				counter_sel <= counter_sel + 1;
 			when 3 =>
-				xpos <= 558;
-				ypos <= 188;
-				cnt <= cnt + 1;
+				ypos_sel <= 188;
+				counter_sel <= counter_sel + 1;
 			when 4 =>
-				xpos <= 558;
-				ypos <= 218;
-				cnt <= cnt + 1;
+				ypos_sel <= 218;
+				counter_sel <= counter_sel + 1;
 			when 5 =>
-				xpos <= 558;
-				ypos <= 248;
-				cnt <= cnt + 1;
+				ypos_sel <= 248;
+				counter_sel <= counter_sel + 1;
 			when 6 =>
-				xpos <= 558;
-				ypos <= 278;
-				cnt <= cnt + 1;
+				ypos_sel <= 278;
+				counter_sel <= counter_sel + 1;
 			when 7 =>
-				xpos <= 558;
-				ypos <= 308;
-				cnt <= 0;
+				ypos_sel <= 308;
+				counter_sel <= 0;
 		end case;
  end process;
  
-COUNT <= cnt;
+ key1_press : process 
+ begin 
+	if(RESET_N='0')then
+		counter_sel_griglia<= 0;
+		ypos_sel_griglia 	<= 24;
+		xpos_sel_griglia	<=52;
+	end if;
+	 wait until KEY(1)='0' and KEY(1)'EVENT; 
+		case counter_sel_griglia is
+			when 0 => 
+				xpos_sel_griglia <= 52;
+				counter_sel_griglia <= counter_sel_griglia + 1;
+			when 1 =>
+				xpos_sel_griglia <= 104;
+				counter_sel_griglia <= counter_sel_griglia + 1;
+			when 2 =>
+				xpos_sel_griglia <= 158;
+				counter_sel_griglia <= counter_sel_griglia + 1;
+			when 3 =>
+				xpos_sel_griglia <= 212;
+				counter_sel_griglia <= 0;
+		end case;
+ end process;
+ 
 
 	
 end architecture;

@@ -53,8 +53,7 @@ architecture RTL of mastermind is
 	signal new_game				: 	std_logic;
 	signal enable_check			: 	std_logic;
 	signal user_victory			:	std_logic;
-	signal random_num				: std_logic_vector(2 downto 0);
-	signal cnt 					: integer range 7 to 0 ; 
+	signal random_num				: std_logic_vector(2 downto 0); 
 	
 	
 begin
@@ -116,8 +115,7 @@ begin
 				VGA_G		=> VGA_G,		
 				VGA_B		=> VGA_B,
 				LEDG	=> LEDG,
-				KEY 		=> KEY,
-				COUNT    => cnt
+				KEY 		=> KEY
 --				leds1			=> leds1,		
 --				leds2 		=> leds2,
 --				leds3 		=> leds3, 

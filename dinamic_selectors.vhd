@@ -26,15 +26,10 @@ architecture box of dinamic_selectors is
 	-- Coordinate finali del cubo sullo schermo
 	signal MAX_X 		: integer range 0 to 1000 	:= XPOS + DIMX;
 	signal MAX_Y 		: integer range 0 to 500 	:= YPOS + DIMY;
-	signal SPESSORE 	: integer range 0 to 500   := SPES;
 begin
 
 	valueChange : process(number)
 	begin
-		if(SPESSORE > 0 ) then 
-			MAX_X <= XPOS + SPESSORE;
-			MAX_Y <= YPOS + SPESSORE; 
-		end if;
 		case number is
 			when 0 => 
 				color <=	COLOR_BROWN;
@@ -63,7 +58,10 @@ begin
 
 	drawBox <= '1' 
 		when 
-			pixel_x >= XPOS and pixel_x <= MAX_X and pixel_y >= YPOS and pixel_y <= MAX_Y 
+			(pixel_x >= XPOS and pixel_x <= XPOS+SPES and pixel_y >= YPOS and pixel_y <= MAX_Y+SPES) or 
+			(pixel_x >= XPOS and pixel_x <= MAX_X+SPES and pixel_y >= YPOS and pixel_y <= YPOS+SPES) or
+			(pixel_x >= MAX_X and pixel_x <= MAX_X+SPES and pixel_y >= YPOS and pixel_y <= MAX_Y+SPES) or
+			(pixel_x >= XPOS and pixel_x <= MAX_X+SPES and pixel_y >= MAX_Y and pixel_y <= MAX_Y+SPES)
 		else
 			'0';
 end box;

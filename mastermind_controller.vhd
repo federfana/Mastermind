@@ -20,7 +20,7 @@ entity mastermind_controller is
 		ENABLE_INSERT			: out std_logic;
 		
 		
-		-- Connections with view--
+		-- Connections with view
 		NEW_GAME					: in std_logic;
 		ENABLE_CHECK			: in std_logic;
 		USER_VICTORY			: out std_logic;
