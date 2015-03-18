@@ -32,32 +32,18 @@ end entity;
 architecture RTL of mastermind_view is
 	shared variable h_cnt	: integer range 0 to 1000;
 	shared variable v_cnt  	: integer range 0 to 500;
-	signal b1					: std_logic;
-	signal colorB1				: STD_LOGIC_VECTOR(11 downto 0);
-	signal b2					: std_logic;
-	signal colorB2				: STD_LOGIC_VECTOR(11 downto 0);
-	signal palR					: std_logic;
-	signal colorR				: STD_LOGIC_VECTOR(11 downto 0);
-	signal palO					: std_logic;
-	signal colorO				: STD_LOGIC_VECTOR(11 downto 0);
-	signal palG					: std_logic;
-	signal colorG				: STD_LOGIC_VECTOR(11 downto 0);
-	signal palB					: std_logic;
-	signal colorB				: STD_LOGIC_VECTOR(11 downto 0);
-	signal palY					: std_logic;
-	signal colorY				: STD_LOGIC_VECTOR(11 downto 0);
-	signal palC					: std_logic;
-	signal colorC				: STD_LOGIC_VECTOR(11 downto 0);
-	signal palGR				: std_logic;
-	signal colorGR				: STD_LOGIC_VECTOR(11 downto 0);
-	signal palM					: std_logic;
-	signal colorM				: STD_LOGIC_VECTOR(11 downto 0);
-	signal draw_sel			: std_logic;
-	signal color_sel			: STD_LOGIC_VECTOR(11 downto 0);
+	signal boards					: std_logic_vector(1 downto 0);
+	subtype c_b	is std_logic_vector(11 downto 0);
+	type colorBoard is array (1 downto 0) of c_b;
+	signal colorsBoards 		: colorBoard;
+	signal paletta				: std_logic_vector(7 downto 0);
+	type colorsPal is array (7 downto 0) of c_b;
+	signal colori_paletta	: colorsPal;	
+	signal draw_sel			: std_logic_vector(1 downto 0);
+	type selettore is array (2 downto 0) of c_b;
+	signal color_sel			: selettore;
 	signal counter_sel            	: integer range 0 to 7 :=0; 
 	signal ypos_sel 						: integer range 0 to 1000 := 98;
-	signal draw_sel_griglia				: std_logic;
-	signal color_sel_griglia			: STD_LOGIC_VECTOR(11 downto 0);
 	signal counter_sel_griglia       : integer range 0 to 3 :=0; 
 	signal ypos_sel_griglia 			: integer range 0 to 1000:= 24;
 	signal xpos_sel_griglia 			: integer range 0 to 1000:=52;
@@ -78,8 +64,8 @@ BOARD1: entity work.box_view
 		pixel_x => h_cnt,
 		pixel_y => v_cnt,
 		number 	=> 0,
-		drawbox => b1,
-		color	=> colorB1
+		drawbox => boards(0),
+		color	=> colorsBoards(0)
 	);
 	
 BOARD2: entity work.box_view
@@ -95,8 +81,8 @@ BOARD2: entity work.box_view
 		pixel_x => h_cnt,
 		pixel_y => v_cnt,
 		number 	=> 0,
-		drawbox => b2,
-		color	=> colorB2
+		drawbox => boards(1),
+		color	=> colorsBoards(1)
 	);
 PALETTAROSSA: entity work.box_view
  generic map
@@ -111,8 +97,8 @@ PALETTAROSSA: entity work.box_view
 		pixel_x => h_cnt,
 		pixel_y => v_cnt,
 		number 	=> 1,
-		drawbox => palR,
-		color	=> colorR
+		drawbox => paletta(0),
+		color	=> colori_paletta(0)
 	);
 PALETTAARANCIO: entity work.box_view
  generic map
@@ -127,8 +113,8 @@ PALETTAARANCIO: entity work.box_view
 		pixel_x => h_cnt,
 		pixel_y => v_cnt,
 		number 	=> 2,
-		drawbox => palO,
-		color	=> colorO
+		drawbox => paletta(1),
+		color	=> colori_paletta(1)
 	);
 PALETTAGREEN: entity work.box_view
  generic map
@@ -143,8 +129,8 @@ PALETTAGREEN: entity work.box_view
 		pixel_x => h_cnt,
 		pixel_y => v_cnt,
 		number 	=> 3,
-		drawbox => palG,
-		color	=> colorG
+		drawbox => paletta(2),
+		color	=> colori_paletta(2)
 	);
 PALETTABLUE: entity work.box_view
  generic map
@@ -159,8 +145,8 @@ PALETTABLUE: entity work.box_view
 		pixel_x => h_cnt,
 		pixel_y => v_cnt,
 		number 	=> 4,
-		drawbox => palB,
-		color	=> colorB
+		drawbox => paletta(3),
+		color	=> colori_paletta(3)
 	);
 PALETTAYELLOW: entity work.box_view
  generic map
@@ -175,8 +161,8 @@ PALETTAYELLOW: entity work.box_view
 		pixel_x => h_cnt,
 		pixel_y => v_cnt,
 		number 	=> 5,
-		drawbox => palY,
-		color	=> colorY
+		drawbox => paletta(4),
+		color	=> colori_paletta(4)
 	);
 PALETTACYAN: entity work.box_view
  generic map
@@ -191,8 +177,8 @@ PALETTACYAN: entity work.box_view
 		pixel_x => h_cnt,
 		pixel_y => v_cnt,
 		number 	=> 6,
-		drawbox => palC,
-		color	=> colorC
+		drawbox => paletta(5),
+		color	=> colori_paletta(5)
 	);
 PALETTAGREY: entity work.box_view
  generic map
@@ -207,8 +193,8 @@ PALETTAGREY: entity work.box_view
 		pixel_x => h_cnt,
 		pixel_y => v_cnt,
 		number 	=> 7,
-		drawbox => palGR,
-		color	=> colorGR
+		drawbox => paletta(6),
+		color	=> colori_paletta(6)
 	);
 PALETTAMAGENTA: entity work.box_view
  generic map
@@ -223,8 +209,8 @@ PALETTAMAGENTA: entity work.box_view
 		pixel_x => h_cnt,
 		pixel_y => v_cnt,
 		number 	=> 8,
-		drawbox => palM,
-		color	=> colorM
+		drawbox => paletta(7),
+		color	=> colori_paletta(7)
 	);
 	
 SELEZIONATORE_COLORE: entity work.dinamic_selectors
@@ -238,8 +224,8 @@ SELEZIONATORE_COLORE: entity work.dinamic_selectors
 		pixel_x => h_cnt,
 		pixel_y => v_cnt,
 		number 	=> 10,
-		drawbox => draw_sel,
-		color	=> color_sel 
+		drawbox => draw_sel(0),
+		color	=> color_sel(0) 
 );
 
 SELEZIONATORE_GRIGLIA: entity work.dinamic_selectors
@@ -253,8 +239,8 @@ SELEZIONATORE_GRIGLIA: entity work.dinamic_selectors
 		pixel_x => h_cnt,
 		pixel_y => v_cnt,
 		number 	=> 9,
-		drawbox => draw_sel_griglia,
-		color	=> color_sel_griglia 
+		drawbox => draw_sel(1),
+		color	=> color_sel(1)
 );
 
 --RIGA1_BOARD1 : entity work.righe_board
@@ -313,69 +299,28 @@ WAIT UNTIL(CLOCK'EVENT) AND (CLOCK = '1');
 		
 
 	----- DISEGNO BOX --------
-		if(b1='1' or b2='1') then
-		red_signal(3 downto 0) 	:= colorB1(11 downto 8); 		
-		green_signal(3 downto 0):= colorB1(7 downto 4);  
-		blue_signal(3 downto 0) := colorB1(3 downto 0);	
+		if(boards(0)='1' or boards(1)='1') then
+		red_signal(3 downto 0) 	:= colorsBoards(0)(11 downto 8); 		
+		green_signal(3 downto 0):= colorsBoards(0)(7 downto 4);  
+		blue_signal(3 downto 0) := colorsBoards(0)(3 downto 0);	
 		end if;
-		if(palR='1') then
-				red_signal(3 downto 0) 	:= colorR(11 downto 8); 		
-				green_signal(3 downto 0):= colorR(7 downto 4);  
-				blue_signal(3 downto 0) := colorR(3 downto 0);	
-		end if;
-		if(palO='1') then
-				red_signal(3 downto 0) 	:= colorO(11 downto 8); 		
-				green_signal(3 downto 0):= colorO(7 downto 4);  
-				blue_signal(3 downto 0) := colorO(3 downto 0);	
-		end if;
-		if(palG='1') then
-				red_signal(3 downto 0) 	:= colorG(11 downto 8); 		
-				green_signal(3 downto 0):= colorG(7 downto 4);  
-				blue_signal(3 downto 0) := colorG(3 downto 0);	
-		end if;
-		if(palB='1') then
-				red_signal(3 downto 0) 	:= colorB(11 downto 8); 		
-				green_signal(3 downto 0):= colorB(7 downto 4);  
-				blue_signal(3 downto 0) := colorB(3 downto 0);	
-		end if;
-		if(palY='1') then
-				red_signal(3 downto 0) 	:= colorY(11 downto 8); 		
-				green_signal(3 downto 0):= colorY(7 downto 4);  
-				blue_signal(3 downto 0) := colorY(3 downto 0);	
-		end if;
-		if(palC='1') then
-				red_signal(3 downto 0) 	:= colorC(11 downto 8); 		
-				green_signal(3 downto 0):= colorC(7 downto 4);  
-				blue_signal(3 downto 0) := colorC(3 downto 0);	
-		end if;
-		if(palGR='1') then
-				red_signal(3 downto 0) 	:= colorGR(11 downto 8); 		
-				green_signal(3 downto 0):= colorGR(7 downto 4);  
-				blue_signal(3 downto 0) := colorGR(3 downto 0);	
-		end if;
-		if(palM='1') then
-				red_signal(3 downto 0) 	:= colorM(11 downto 8); 		
-				green_signal(3 downto 0):= colorM(7 downto 4);  
-				blue_signal(3 downto 0) := colorM(3 downto 0);	
-		end if;
+		for i in 0 to 7 loop 
+			if(paletta(i)='1') then 
+				red_signal(3 downto 0) 	:= colori_paletta(i)(11 downto 8); 		
+				green_signal(3 downto 0):= colori_paletta(i)(7 downto 4);  
+				blue_signal(3 downto 0) := colori_paletta(i)(3 downto 0);	
+			end if;
+		end loop;
 		
-		
-		if(draw_sel='1') then
-				red_signal(3 downto 0)  := color_sel(11 downto 8); 		
-				green_signal(3 downto 0)  := color_sel(7 downto 4);  
-				blue_signal(3 downto 0)  := color_sel(3 downto 0);
-		end if;
-		
-		if(draw_sel_griglia='1') then
-				red_signal(3 downto 0)  := color_sel_griglia(11 downto 8); 		
-				green_signal(3 downto 0)  := color_sel_griglia(7 downto 4);  
-				blue_signal(3 downto 0)  := color_sel_griglia(3 downto 0);
-		end if;
-		
+		for i in 0 to 1 loop 
+			if(draw_sel(i)='1') then 
+				red_signal(3 downto 0) 	:= color_sel(i)(11 downto 8); 		
+				green_signal(3 downto 0):= color_sel(i)(7 downto 4);  
+				blue_signal(3 downto 0) := color_sel(i)(3 downto 0);	
+			end if;
+		end loop;
 
 	----- FINE DISEGNO BOX --------
---gridOn <= '1' when ((unsigned(pixel_y) > 40 and unsigned(pixel_y) <= 440) and (unsigned(pixel_x) > 120 and unsigned(pixel_x) <=520)) 
-	--else '0';
 
 		--Horizontal Sync
 		
@@ -509,7 +454,5 @@ end process;
 				counter_sel_griglia <= 0;
 		end case;
  end process;
- 
 
-	
 end architecture;
