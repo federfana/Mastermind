@@ -1,8 +1,8 @@
 library ieee;
 use ieee.numeric_std.all;
 use ieee.std_logic_1164.all;
-use work.mastermind_package.all;
 use work.vga_package.all;
+use work.mastermind_package.all;
 
 
 entity mastermind is
@@ -17,112 +17,90 @@ entity mastermind is
 			VGA_G               : out std_logic_vector(3 downto 0);
 			VGA_B               : out std_logic_vector(3 downto 0);
 			VGA_HS              : out std_logic;
-			VGA_VS              : out std_logic;
-			SRAM_ADDR           : out   std_logic_vector(17 downto 0);
-			SRAM_DQ             : inout std_logic_vector(15 downto 0);
-			SRAM_CE_N           : out   std_logic;
-			SRAM_OE_N           : out   std_logic;
-			SRAM_WE_N           : out   std_logic;
-			SRAM_UB_N           : out   std_logic;
-			SRAM_LB_N           : out   std_logic
-			
-			
---			leds1 			: OUT STD_LOGIC_VECTOR(6 downto 0); 
---			leds2 			: OUT STD_LOGIC_VECTOR(6 downto 0);
---			leds3 			: OUT STD_LOGIC_VECTOR(6 downto 0); 
---			leds4 			: OUT STD_LOGIC_VECTOR(6 downto 0)
+			VGA_VS              : out std_logic
        );
 end;
 
 architecture RTL of mastermind is
-	signal clock 					:	std_logic;
-	signal RESET_N					:	std_logic;
+	signal clock 					: std_logic;
+	signal RESET_N					: std_logic;
 	signal clock_25Mhz			: STD_LOGIC;
-	-- mancano i segnali della view
-	
-	---segnali datapath
-	signal new_cod					: 	std_logic;
-	signal new_secret_cod		: 	code;
-	signal clear_boards			: 	std_logic;
-	signal insert_check			:	code;
-	signal enable_insert			: 	std_logic;
-	signal count					: 	integer range 0 to (BOARD1_ROWS-1);
-	signal refresh					:	std_logic;
-	signal insert_attempt 		: 	code;
-	--segnali controller
-	signal new_game				: 	std_logic;
-	signal enable_check			: 	std_logic;
-	signal user_victory			:	std_logic;
-	signal random_num				: std_logic_vector(2 downto 0); 
-	
-	
+	signal color 					: color_type;
+	signal h_count					: integer range 0 to 1000;
+	signal v_count 				: integer range 0 to 500;
+	signal xpos						: integer;
+	signal ypos						: integer;
+	signal dimx						: integer;
+	signal dimy						: integer;
+	signal random_num				: std_logic_vector(2 downto 0);
+	signal enable_check 			: std_logic;
+	signal user_victory			: std_logic;
+	signal insert_attempt		: row;
+	signal insert_check 			: code;
+	signal new_game				:std_logic;
+	signal check					:std_logic;
+	--signal drawBox					: std_logic;
 begin
-
 	pll: entity work.PLL
 			port map(
 				inclk0 				=> CLOCK_50,
 				c0 					=> clock,
 				c1						=> clock_25Mhz			
 			);
+	
 	randomNumber : entity work.randomNumber
 			port map(
-				CLOCK => clock,
+				CLOCK => clock_25Mhz,
 				random_num =>random_num
 			);
+
 			
-			
-	datapath : entity work.mastermind_datapath
-			port map(
-				CLOCK					=> clock_25Mhz,
-				RESET_N 				=> RESET_N,
-				NEW_COD 				=> new_cod,
-				NEW_SECRET_COD 	=> new_secret_cod,
-				CLEAR_BOARDS 		=> clear_boards,
-				INSERT_CHECK 		=> insert_check,
-				ENABLE_INSERT 		=> enable_insert,
-				COUNT 				=> count,
-				REFRESH 				=> refresh,
-				INSERT_ATTEMPT 	=> insert_attempt
-			);
-			
-	controller : entity work.mastermind_controller
-			port map(
-				CLOCK					=> clock_25Mhz,
-				RESET_N 				=> RESET_N,
-				NEW_COD 				=> new_cod,
-				NEW_SECRET_COD 	=> new_secret_cod,
-				CLEAR_BOARDS 		=> clear_boards,
-				INSERT_CHECK 		=> insert_check,
-				ENABLE_INSERT 		=> enable_insert,
-				INSERT_ATTEMPT 	=> insert_attempt,
-				NEW_GAME 			=> new_game,
-				ENABLE_CHECK 		=> enable_check,
-				USER_VICTORY 		=> user_victory,
-				random_num			=> random_num
-			);
-			
+	vga_c : entity work.vga_controller
+		port map
+		(
+			CLOCK					=> clock_25Mhz,
+			RESET_N 				=> RESET_N,
+			VGA_HS				=> VGA_HS,		
+			VGA_VS				=> VGA_VS,		
+			VGA_R					=> VGA_R,	
+			VGA_G					=> VGA_G,		
+			VGA_B					=> VGA_B,
+			COLOR 				=> color,
+			H_COUNT				=> h_count,
+			V_COUNT				=> v_count
+		);
 	view : entity work.mastermind_view
-			port map(
-				CLOCK					=> clock_25Mhz,
-				RESET_N 				=> RESET_N,
-				INSERT_ATTEMPT 	=> insert_attempt,
-				NEW_GAME 			=> new_game,
-				ENABLE_CHECK 		=> enable_check,
-				USER_VICTORY 		=> user_victory,
-				VGA_HS		=> VGA_HS,		
-				VGA_VS		=> VGA_VS,		
-				VGA_R		=> VGA_R,	
-				VGA_G		=> VGA_G,		
-				VGA_B		=> VGA_B,
-				LEDG	=> LEDG,
-				KEY 		=> KEY
---				leds1			=> leds1,		
---				leds2 		=> leds2,
---				leds3 		=> leds3, 
---				leds4 		=> leds4
-			);
-			
-	
+		port map
+		(
+			CLOCK					=> clock_25Mhz,
+			RESET_N 				=> RESET_N,
+			KEY					=> KEY,
+			COLOR 				=> color,
+			ENABLE_CHECK		=> enable_check,
+			NEW_GAME 			=> new_game,
+			USER_VICTORY  		=> user_victory,
+			INSERT_ATTEMPT    => insert_attempt,
+			INSERT_CHECK		=> insert_check,
+			CHECK 				=> check,
+			H_COUNT				=> h_count,
+			V_COUNT				=> v_count			
+		);
+		
+	datapath: entity work.mastermind_datapath
+		port map
+		(
+			CLOCK					=> clock_25Mhz,
+			RESET_N 				=> RESET_N,
+			random_num 			=> random_num,
+			ENABLE_CHECK		=> enable_check,
+			NEW_GAME 			=> new_game,
+			USER_VICTORY  		=> user_victory,
+			CHECK 				=> check,
+			INSERT_ATTEMPT    => insert_attempt,
+			INSERT_CHECK		=> insert_check
+		);	
+		
+		
 
 end architecture;
 
