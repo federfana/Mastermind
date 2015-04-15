@@ -32,13 +32,14 @@ architecture RTL of mastermind is
 	signal ypos						: integer;
 	signal dimx						: integer;
 	signal dimy						: integer;
-	signal random_num				: std_logic_vector(2 downto 0);
+	signal random_num				: std_logic_vector(11 downto 0);
 	signal enable_check 			: std_logic;
 	signal user_victory			: std_logic;
 	signal insert_attempt		: row;
 	signal insert_check 			: code;
 	signal new_game				:std_logic;
 	signal check					:std_logic;
+	signal start 					: std_logic;
 	--signal drawBox					: std_logic;
 begin
 	pll: entity work.PLL
@@ -83,6 +84,7 @@ begin
 			INSERT_CHECK		=> insert_check,
 			CHECK 				=> check,
 			H_COUNT				=> h_count,
+			START 			   => start,	
 			V_COUNT				=> v_count			
 		);
 		
@@ -97,6 +99,7 @@ begin
 			USER_VICTORY  		=> user_victory,
 			CHECK 				=> check,
 			INSERT_ATTEMPT    => insert_attempt,
+			START 			   => start,
 			INSERT_CHECK		=> insert_check
 		);	
 		

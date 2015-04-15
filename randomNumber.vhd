@@ -2,7 +2,7 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
 entity randomNumber is 
-	generic (wd : integer:=3);
+	generic (wd : integer:=12);
 	
 	port (
 		CLOCK			:in std_logic;

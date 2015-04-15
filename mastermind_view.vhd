@@ -15,6 +15,7 @@ entity mastermind_view is
 		ENABLE_CHECK 	: out std_logic:='0';
 		USER_VICTORY	: in 	std_logic;
 		INSERT_ATTEMPT	: out row;
+		START 			: out std_logic:='0';
 		INSERT_CHECK   : in code;
 		CHECK				: in std_logic;
 		H_COUNT			: in integer range 0 to 1000;
@@ -36,6 +37,8 @@ architecture RTL of mastermind_view is
 	signal xpos_sel_griglia : integer range 0 to 1000:=52;
 	signal ypos_sel_griglia : integer range 0 to 1000:=24;
 	signal counter_sel_griglia : integer range 0 to 4 := 1;	
+	signal s : std_logic:='0';
+	signal n : std_logic:='1';
 	
 	
 begin
@@ -86,9 +89,10 @@ SELEZIONATORE_CELLA: entity work.dinamic_selectors
 			
 		end if;
 		if(rising_edge(CLOCK) and CLOCK'EVENT )then
-			NEW_GAME <= '0';
 			if((H_COUNT <= 640) and (V_COUNT<= 480)) then 
 				COLOR <= COLOR_BACKGROUND;
+				if(s='1') then 
+					n <= '0';
 				XPOS := MARGIN_L_BOARD1;
 				YPOS := MARGIN_TOP_BOARD;
 				DIMX := DIM_BOARD_X;
@@ -164,6 +168,7 @@ SELEZIONATORE_CELLA: entity work.dinamic_selectors
 						end if;
 					end if;
 				end if;
+				end if;
 			end if;
 		end if;
 	end process;
@@ -177,6 +182,7 @@ key0_press : process
 		selected_color <= COLOR_RED;
 	end if;
 	 wait until KEY(0)='0' and KEY(0)'EVENT; 
+	 if(s='1') then
 		case counter_sel is
 			when 0=> 
 				ypos_sel <= ypos_sel;
@@ -189,6 +195,7 @@ key0_press : process
 			when 8 =>
 				counter_sel <= 1;
 		end case;
+		end if;
  end process;
  
  key1_press : process 
@@ -198,6 +205,7 @@ key0_press : process
 		xpos_sel_griglia	<=52;
 	end if;
 	 wait until KEY(1)='0' and KEY(1)'EVENT;
+		if(s='1') then
 		case counter_sel_griglia is
 			when 0 => 
 				xpos_sel_griglia <= 52;
@@ -208,6 +216,7 @@ key0_press : process
 			when 4 =>
 				counter_sel_griglia <= 1 ; 
 		end case;
+		end if;
  end process;
 	
 	key2_press : process 
@@ -218,6 +227,7 @@ key0_press : process
 			ENABLE_CHECK <='0';
 		end if;
 		wait until KEY(2)='0' and KEY(2)'EVENT;
+			if(s='1') then
 			ENABLE_CHECK<='0';
 			case row_count is 
 				when 0 to 7 => 
@@ -232,7 +242,76 @@ key0_press : process
 			end case;
 			INSERT_ATTEMPT <= board1.rows(row_count-1);
 			ENABLE_CHECK<= '1';
+			end if;
 		end process;
+		
+--		
+--		someKey_press :process 
+--		begin 
+--		if(RESET_N='0') then
+--			counter_sel<= 1;
+--			ypos_sel <= 78;
+--			selected_color <= COLOR_RED;
+--			counter_sel_griglia<= 0;
+--			xpos_sel_griglia	<=52;
+--			row_count <= 1;
+--			ypos_sel_griglia 	<= 24;
+--			ENABLE_CHECK <='0';
+--		end if;
+--		wait until KEY(0)='0' or KEY(1)='0' or KEY(2)='0';
+--			if(KEY(0)='0' and KEY(1)='1' and KEY(2)='1') then
+--				case counter_sel is
+--					when 0=> 
+--						ypos_sel <= ypos_sel;
+--						selected_color <= COLOR_RED;
+--						counter_sel <= counter_sel + 1;
+--					when 1 to 7 =>
+--						ypos_sel <= ypos_sel + 40;
+--						counter_sel <= counter_sel + 1;
+--						selected_color <= colors_pals(counter_sel);
+--					when 8 =>
+--						counter_sel <= 1;
+--						ypos_sel <= 78;
+--				end case;
+--			elsif(KEY(1)='0' and KEY(0)='1' and KEY(2)='1') then 
+--				case counter_sel_griglia is
+--					when 0 => 
+--						xpos_sel_griglia <= 52;
+--						counter_sel_griglia <= counter_sel_griglia + 1;				
+--					when 1 to 3 =>
+--						xpos_sel_griglia <= xpos_sel_griglia + 54;
+--						counter_sel_griglia <= counter_sel_griglia + 1;
+--					when 4 =>
+--						counter_sel_griglia <= 1 ; 
+--				end case;			
+--			elsif(KEY(2)='0' and KEY(1)='1' and KEY(0)='1') then
+--				ENABLE_CHECK<='0';
+--				case row_count is 
+--					when 0 to 7 => 
+--						row_count <= row_count+1;
+--						ypos_sel_griglia <= ypos_sel_griglia + 54;
+--					when 8 =>
+--						row_count <= 9;
+--						ypos_sel_griglia <=ypos_sel_griglia;
+--					when 9 =>
+--						row_count <= 9;
+--						ypos_sel_griglia <=ypos_sel_griglia;
+--				end case;
+--				INSERT_ATTEMPT <= board1.rows(row_count-1);
+--				ENABLE_CHECK<= '1';
+--			elsif(KEY(3)='0') then
+--			
+--			end if;
+--		end process;
 
+key3_press: process
+	begin
+	wait until KEY(3)='0' and KEY(3)'EVENT;
+		s <= '1';
+		
+	end process;
+START<=s;
+NEW_GAME <= n;
+	
 end architecture;
 	

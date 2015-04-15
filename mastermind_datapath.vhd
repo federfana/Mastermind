@@ -11,13 +11,14 @@ port
 	(
 		CLOCK						: in  std_logic;
 		RESET_N					: in  std_logic;
-		random_num				: in 	std_logic_vector(2 downto 0);
+		random_num				: in 	std_logic_vector(11 downto 0);
 		
 		---connection with view ----- 
 		NEW_GAME 				: in std_logic;
 		ENABLE_CHECK			: in std_logic;
 		USER_VICTORY			: out std_logic;
 		INSERT_ATTEMPT 		: in row;
+		START 					: in std_logic;
 		CHECK						: out std_logic:='1';
 		INSERT_CHECK			: out code
 	
@@ -41,24 +42,24 @@ begin
 		
 		end if;
 		if(rising_edge(CLOCK))then
-			if(NEW_GAME = '1')then
---				for i in 0 to 3 loop
---					case random_num is 
---						when "000" => secret_cod(i) <= COLOR_RED;
---						when "001" => secret_cod(i) <= COLOR_BLUE;
---						when "010" => secret_cod(i) <= COLOR_ORANGE;
---						when "011" => secret_cod(i) <= COLOR_GREEN;
---						when "100" => secret_cod(i) <= COLOR_YELLOW;
---						when "101" => secret_cod(i) <= COLOR_CYAN;
---						when "110" => secret_cod(i) <= COLOR_GREY;
---						when "111" => secret_cod(i) <= COLOR_MAGENTA;
---					end case;
---				end loop;
+			if(NEW_GAME = '1' and START = '1')then
+				for i in 0 to 3 loop
+					case random_num(i*3+2 downto i*3) is 
+						when "000" => secret_cod(i) <= COLOR_RED;
+						when "001" => secret_cod(i) <= COLOR_BLUE;
+						when "010" => secret_cod(i) <= COLOR_ORANGE;
+						when "011" => secret_cod(i) <= COLOR_GREEN;
+						when "100" => secret_cod(i) <= COLOR_YELLOW;
+						when "101" => secret_cod(i) <= COLOR_CYAN;
+						when "110" => secret_cod(i) <= COLOR_GREY;
+						when "111" => secret_cod(i) <= COLOR_MAGENTA;
+					end case;
+				end loop;
 --				NEW_SECRET_COD <= secret_cod;
-				secret_cod(0) <= COLOR_RED;
-				secret_cod(1) <= COLOR_BLUE;
-				secret_cod(2) <= COLOR_ORANGE;
-				secret_cod(3) <= COLOR_GREEN;				
+--				secret_cod(0) <= COLOR_RED;
+--				secret_cod(1) <= COLOR_BLUE;
+--				secret_cod(2) <= COLOR_ORANGE;
+--				secret_cod(3) <= COLOR_GREEN;				
 			end if;
 		end if;
 	end process;
