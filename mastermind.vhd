@@ -9,15 +9,19 @@ entity mastermind is
 
         port
 		(
-			CLOCK_50            : in  std_logic;
-			KEY                 : in  std_logic_vector(3 downto 0);
-			SW                  : in  std_logic_vector(9 downto 9);
+			CLOCK_50            	: in  std_logic;
+			KEY                 	: in  std_logic_vector(3 downto 0);
+			HEX0						: out std_logic_vector(6 downto 0);
+			HEX1						: out std_logic_vector(6 downto 0);
+			HEX2						: out std_logic_vector(6 downto 0);
+			HEX3						: out std_logic_vector(6 downto 0);
+			SW                 	: in  std_logic_vector(9 downto 9);
 			LEDG						: out std_logic_vector(7 downto 0);
-			VGA_R               : out std_logic_vector(3 downto 0);
-			VGA_G               : out std_logic_vector(3 downto 0);
-			VGA_B               : out std_logic_vector(3 downto 0);
-			VGA_HS              : out std_logic;
-			VGA_VS              : out std_logic
+			VGA_R             	: out std_logic_vector(3 downto 0);
+			VGA_G               	: out std_logic_vector(3 downto 0);
+			VGA_B               	: out std_logic_vector(3 downto 0);
+			VGA_HS              	: out std_logic;
+			VGA_VS              	: out std_logic
        );
 end;
 
@@ -37,11 +41,20 @@ architecture RTL of mastermind is
 	signal user_victory			: std_logic;
 	signal insert_attempt		: row;
 	signal insert_check 			: code;
+	signal attempt 					: row;
 	signal new_game				:std_logic;
 	signal check					:std_logic;
 	signal start 					: std_logic;
-	--signal drawBox					: std_logic;
-begin
+	signal contatore1 			:  integer range 0 to 8;
+	signal ypos_sel1 				: integer range 0 to 1000;
+	signal paletta 				: 	colors_pal;
+	signal colore_selezionato 	:  color_type;
+	signal xpos_sel2 : integer range 0 to 1000;
+	signal ypos_sel2 : integer range 0 to 1000;
+	signal contatore2 : integer range 0 to 4;
+	signal contatore_riga : integer range 0 to BOARD_ROWS;
+	
+	begin
 	pll: entity work.PLL
 			port map(
 				inclk0 				=> CLOCK_50,
@@ -75,12 +88,18 @@ begin
 		(
 			CLOCK					=> clock_25Mhz,
 			RESET_N 				=> RESET_N,
-			KEY					=> KEY,
 			COLOR 				=> color,
-			ENABLE_CHECK		=> enable_check,
+			counter_sel     	=>contatore1,
+			ypos_sel				=> ypos_sel1,
+			selected_color		=> colore_selezionato, 
+			colors_pals			=> paletta,
+			counter_sel_griglia	=>	contatore2,
+			row_count		=> contatore_riga,
+			xpos_sel_griglia			=> xpos_sel2,
+			ypos_sel_griglia			=> ypos_sel2,
 			NEW_GAME 			=> new_game,
 			USER_VICTORY  		=> user_victory,
-			INSERT_ATTEMPT    => insert_attempt,
+			ATTEMPT            => ATTEMPT,
 			INSERT_CHECK		=> insert_check,
 			CHECK 				=> check,
 			H_COUNT				=> h_count,
@@ -102,6 +121,31 @@ begin
 			START 			   => start,
 			INSERT_CHECK		=> insert_check
 		);	
+		
+		
+		controller : entity work.mastermind_controller
+		port map
+		(
+			CLOCK					=> clock_25Mhz,
+			RESET_N 				=> RESET_N,
+			KEY					=> KEY,
+			HEX0 					=> HEX0,
+			HEX1 					=> HEX1,
+			HEX2 					=> HEX2,
+			HEX3 					=> HEX3,
+			ATTEMPT				=> attempt,
+			INSERT_ATTEMPT    => insert_attempt,
+			CONTATORE1     	=>contatore1,
+			YPOS_SEL1			 => ypos_sel1,
+			COLORE_SELEZIONATO => colore_selezionato,
+			ENABLE_CHECK		=> enable_check,
+			PALETTA_COLORI 	=> paletta,
+			CONTATORE2			=>	contatore2,
+			CONTATORE_RIGA		=> contatore_riga,
+			XPOS_SEL2			=> xpos_sel2,
+			YPOS_SEL2			=> ypos_sel2,
+			START 			   => start		
+		);
 		
 		
 

@@ -9,13 +9,19 @@ entity mastermind_view is
 	(
 		CLOCK				: in  std_logic;
 		RESET_N			: in  std_logic;
-		KEY				: in  std_logic_vector(3 downto 0);
 		COLOR 			: out color_type;
+		counter_sel     		: in  integer range 0 to 8;
+		ypos_sel				: 	in integer range 0 to 1000;
+		selected_color 	: 	in color_type;
+		colors_pals			:	in colors_pal;
+		counter_sel_griglia			: in integer range 0 to 4;
+		row_count						: in integer range 0 to BOARD_ROWS+1;
+		xpos_sel_griglia				: in integer range 0 to 1000;
+		ypos_sel_griglia				: in integer range 0 to 1000;		
 		NEW_GAME			: out std_logic:='1';
-		ENABLE_CHECK 	: out std_logic:='0';
 		USER_VICTORY	: in 	std_logic;
-		INSERT_ATTEMPT	: out row;
-		START 			: out std_logic:='0';
+		ATTEMPT			: out row;
+		START 			: in std_logic;
 		INSERT_CHECK   : in code;
 		CHECK				: in std_logic;
 		H_COUNT			: in integer range 0 to 1000;
@@ -26,32 +32,15 @@ end entity;
 
 architecture RTL of mastermind_view is
 	signal board1 : board;
-	signal board2 : board;
-	signal row_count : integer range 0 to BOARD_ROWS+1:=1;
-	signal colors_pals : colors_pal;
+	signal board2 : board;	
 	signal draw_sel			: std_logic_vector(1 downto 0);
 	signal coloreSelettore 	: color_type;
-	signal ypos_sel : integer range 0 to 1000:=78;
-	signal counter_sel : integer range 0 to 8 := 1;
-	signal selected_color : color_type := COLOR_RED;
-	signal xpos_sel_griglia : integer range 0 to 1000:=52;
-	signal ypos_sel_griglia : integer range 0 to 1000:=24;
-	signal counter_sel_griglia : integer range 0 to 4 := 1;	
-	signal s : std_logic:='0';
-	signal n : std_logic:='1';
+	signal newgame : std_logic:='1';
 	
 	
 begin
 		board1.color 			<= COLOR_BROWN;
 		board2.color			<= COLOR_BROWN;
-		colors_pals(0)			<= COLOR_RED;
-		colors_pals(1)			<= COLOR_ORANGE;
-		colors_pals(2)			<= COLOR_GREEN;
-		colors_pals(3)			<= COLOR_BLUE;
-		colors_pals(4)			<= COLOR_YELLOW;
-		colors_pals(5)			<= COLOR_CYAN;
-		colors_pals(6)			<= COLOR_GREY;
-		colors_pals(7)			<= COLOR_MAGENTA;
 		
 SELEZIONATORE_COLORE: entity work.dinamic_selectors
 	port map
@@ -91,8 +80,8 @@ SELEZIONATORE_CELLA: entity work.dinamic_selectors
 		if(rising_edge(CLOCK) and CLOCK'EVENT )then
 			if((H_COUNT <= 640) and (V_COUNT<= 480)) then 
 				COLOR <= COLOR_BACKGROUND;
-				if(s='1') then 
-					n <= '0';
+				if(START='1') then 
+					newgame <= '0';
 				XPOS := MARGIN_L_BOARD1;
 				YPOS := MARGIN_TOP_BOARD;
 				DIMX := DIM_BOARD_X;
@@ -172,146 +161,8 @@ SELEZIONATORE_CELLA: entity work.dinamic_selectors
 			end if;
 		end if;
 	end process;
-
-	
-key0_press : process 
- begin 
-	if(RESET_N='0')then
-		counter_sel<= 1;
-		ypos_sel <= 78;
-		selected_color <= COLOR_RED;
-	end if;
-	 wait until KEY(0)='0' and KEY(0)'EVENT; 
-	 if(s='1') then
-		case counter_sel is
-			when 0=> 
-				ypos_sel <= ypos_sel;
-				selected_color <= COLOR_RED;
-				counter_sel <= counter_sel + 1;
-			when 1 to 7 =>
-				ypos_sel <= ypos_sel + 40;
-				counter_sel <= counter_sel + 1;
-				selected_color <= colors_pals(counter_sel);
-			when 8 =>
-				counter_sel <= 1;
-		end case;
-		end if;
- end process;
- 
- key1_press : process 
- begin 
-	if(RESET_N='0')then
-		counter_sel_griglia<= 0;
-		xpos_sel_griglia	<=52;
-	end if;
-	 wait until KEY(1)='0' and KEY(1)'EVENT;
-		if(s='1') then
-		case counter_sel_griglia is
-			when 0 => 
-				xpos_sel_griglia <= 52;
-				counter_sel_griglia <= counter_sel_griglia + 1;				
-			when 1 to 3 =>
-				xpos_sel_griglia <= xpos_sel_griglia + 54;
-				counter_sel_griglia <= counter_sel_griglia + 1;
-			when 4 =>
-				counter_sel_griglia <= 1 ; 
-		end case;
-		end if;
- end process;
-	
-	key2_press : process 
-		begin 
-		if(RESET_N='0') then 
-			row_count <= 1;
-			ypos_sel_griglia 	<= 24;
-			ENABLE_CHECK <='0';
-		end if;
-		wait until KEY(2)='0' and KEY(2)'EVENT;
-			if(s='1') then
-			ENABLE_CHECK<='0';
-			case row_count is 
-				when 0 to 7 => 
-					row_count <= row_count+1;
-					ypos_sel_griglia <= ypos_sel_griglia + 54;
-				when 8 =>
-					row_count <= 9;
-					ypos_sel_griglia <=ypos_sel_griglia;
-				when 9 =>
-					row_count <= 9;
-					ypos_sel_griglia <=ypos_sel_griglia;
-			end case;
-			INSERT_ATTEMPT <= board1.rows(row_count-1);
-			ENABLE_CHECK<= '1';
-			end if;
-		end process;
-		
---		
---		someKey_press :process 
---		begin 
---		if(RESET_N='0') then
---			counter_sel<= 1;
---			ypos_sel <= 78;
---			selected_color <= COLOR_RED;
---			counter_sel_griglia<= 0;
---			xpos_sel_griglia	<=52;
---			row_count <= 1;
---			ypos_sel_griglia 	<= 24;
---			ENABLE_CHECK <='0';
---		end if;
---		wait until KEY(0)='0' or KEY(1)='0' or KEY(2)='0';
---			if(KEY(0)='0' and KEY(1)='1' and KEY(2)='1') then
---				case counter_sel is
---					when 0=> 
---						ypos_sel <= ypos_sel;
---						selected_color <= COLOR_RED;
---						counter_sel <= counter_sel + 1;
---					when 1 to 7 =>
---						ypos_sel <= ypos_sel + 40;
---						counter_sel <= counter_sel + 1;
---						selected_color <= colors_pals(counter_sel);
---					when 8 =>
---						counter_sel <= 1;
---						ypos_sel <= 78;
---				end case;
---			elsif(KEY(1)='0' and KEY(0)='1' and KEY(2)='1') then 
---				case counter_sel_griglia is
---					when 0 => 
---						xpos_sel_griglia <= 52;
---						counter_sel_griglia <= counter_sel_griglia + 1;				
---					when 1 to 3 =>
---						xpos_sel_griglia <= xpos_sel_griglia + 54;
---						counter_sel_griglia <= counter_sel_griglia + 1;
---					when 4 =>
---						counter_sel_griglia <= 1 ; 
---				end case;			
---			elsif(KEY(2)='0' and KEY(1)='1' and KEY(0)='1') then
---				ENABLE_CHECK<='0';
---				case row_count is 
---					when 0 to 7 => 
---						row_count <= row_count+1;
---						ypos_sel_griglia <= ypos_sel_griglia + 54;
---					when 8 =>
---						row_count <= 9;
---						ypos_sel_griglia <=ypos_sel_griglia;
---					when 9 =>
---						row_count <= 9;
---						ypos_sel_griglia <=ypos_sel_griglia;
---				end case;
---				INSERT_ATTEMPT <= board1.rows(row_count-1);
---				ENABLE_CHECK<= '1';
---			elsif(KEY(3)='0') then
---			
---			end if;
---		end process;
-
-key3_press: process
-	begin
-	wait until KEY(3)='0' and KEY(3)'EVENT;
-		s <= '1';
-		
-	end process;
-START<=s;
-NEW_GAME <= n;
+	ATTEMPT <= BOARD1.rows(row_count-1);
+	NEW_GAME <= newgame;
 	
 end architecture;
 	

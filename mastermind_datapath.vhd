@@ -55,11 +55,7 @@ begin
 						when "111" => secret_cod(i) <= COLOR_MAGENTA;
 					end case;
 				end loop;
---				NEW_SECRET_COD <= secret_cod;
---				secret_cod(0) <= COLOR_RED;
---				secret_cod(1) <= COLOR_BLUE;
---				secret_cod(2) <= COLOR_ORANGE;
---				secret_cod(3) <= COLOR_GREEN;				
+--				NEW_SECRET_COD <= secret_cod;			
 			end if;
 		end if;
 	end process;
