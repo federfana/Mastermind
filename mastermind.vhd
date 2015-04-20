@@ -1,4 +1,4 @@
-library ieee;
+	library ieee;
 use ieee.numeric_std.all;
 use ieee.std_logic_1164.all;
 use work.vga_package.all;
@@ -52,7 +52,9 @@ architecture RTL of mastermind is
 	signal xpos_sel2 : integer range 0 to 1000;
 	signal ypos_sel2 : integer range 0 to 1000;
 	signal contatore2 : integer range 0 to 4;
+	signal user_lose  :  std_logic:='0';
 	signal contatore_riga : integer range 0 to BOARD_ROWS;
+	signal new_secret_code : code;
 	
 	begin
 	pll: entity work.PLL
@@ -97,8 +99,10 @@ architecture RTL of mastermind is
 			row_count		=> contatore_riga,
 			xpos_sel_griglia			=> xpos_sel2,
 			ypos_sel_griglia			=> ypos_sel2,
+			NEW_SECRET_COD		=> new_secret_code,
 			NEW_GAME 			=> new_game,
 			USER_VICTORY  		=> user_victory,
+			USER_LOSE 			=> user_lose,
 			ATTEMPT            => ATTEMPT,
 			INSERT_CHECK		=> insert_check,
 			CHECK 				=> check,
@@ -117,6 +121,7 @@ architecture RTL of mastermind is
 			NEW_GAME 			=> new_game,
 			USER_VICTORY  		=> user_victory,
 			CHECK 				=> check,
+			NEW_SECRET_COD		=> new_secret_code,
 			INSERT_ATTEMPT    => insert_attempt,
 			START 			   => start,
 			INSERT_CHECK		=> insert_check
@@ -138,8 +143,10 @@ architecture RTL of mastermind is
 			CONTATORE1     	=>contatore1,
 			YPOS_SEL1			 => ypos_sel1,
 			COLORE_SELEZIONATO => colore_selezionato,
+			USER_LOSE 			=> user_lose,
 			ENABLE_CHECK		=> enable_check,
 			PALETTA_COLORI 	=> paletta,
+			USER_VICTORY  		=> user_victory,
 			CONTATORE2			=>	contatore2,
 			CONTATORE_RIGA		=> contatore_riga,
 			XPOS_SEL2			=> xpos_sel2,

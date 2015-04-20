@@ -20,6 +20,7 @@ port
 		INSERT_ATTEMPT 		: in row;
 		START 					: in std_logic;
 		CHECK						: out std_logic:='1';
+		NEW_SECRET_COD       : out code;
 		INSERT_CHECK			: out code
 	
 	);
@@ -54,8 +55,7 @@ begin
 						when "110" => secret_cod(i) <= COLOR_GREY;
 						when "111" => secret_cod(i) <= COLOR_MAGENTA;
 					end case;
-				end loop;
---				NEW_SECRET_COD <= secret_cod;			
+				end loop;		
 			end if;
 		end if;
 	end process;
@@ -134,7 +134,7 @@ begin
 		end if;
 	end if;
 	end process;
---INSERT_CHECK <= secret_cod;
+NEW_SECRET_COD <= secret_cod;	
 end architecture;
 
 

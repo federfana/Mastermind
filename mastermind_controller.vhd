@@ -17,6 +17,8 @@ port
 		ENABLE_CHECK 	: out std_logic;
 		INSERT_ATTEMPT	: out row;
 		ATTEMPT 			: in row;
+		USER_LOSE 		: out std_logic:='0';
+		USER_VICTORY  		:	in std_logic;
 		CONTATORE1     		: out  integer range 0 to 8;
 		YPOS_SEL1				: out integer range 0 to 1000;
 		COLORE_SELEZIONATO 	: out color_type;
@@ -44,6 +46,7 @@ architecture RTL of mastermind_controller is
 	signal enablecheck : std_logic:='0';
 	signal insert_att : row;
 	signal colors_pals : colors_pal;
+	signal user_l : std_logic :='0';
 
 begin 
 	
@@ -65,7 +68,7 @@ begin
 			selected_color <= COLOR_RED;
 		end if;
 		 wait until KEY(0)='0' and KEY(0)'EVENT; 
-			 if(inizio='1') then
+			 if(inizio='1' and USER_VICTORY='0') then
 				case counter_sel is
 					when 0=> 
 						ypos_sel <= ypos_sel;
@@ -88,7 +91,7 @@ begin
 			xpos_sel_griglia	<=52;
 		end if;
 		 wait until KEY(1)='0' and KEY(1)'EVENT;
-			if(inizio='1') then
+			if(inizio='1' and USER_VICTORY='0') then
 			case counter_sel_griglia is
 				when 0 => 
 					xpos_sel_griglia <= 52;
@@ -113,7 +116,7 @@ begin
 			HEX3	<= "1111111";
 		end if;
 		wait until KEY(2)='0' and KEY(2)'EVENT;
-			if(inizio='1') then
+			if(inizio='1' and USER_VICTORY='0') then
 				enablecheck	<='0';
 				case row_count is 
 					when 0 to 7 => 
@@ -135,17 +138,19 @@ begin
 							HEX0 <= not("1111111"); --8
 						end if;
 						enablecheck<= '1';
+						user_l<='0';
 					when 8 =>
 						row_count <= 9;
 						ypos_sel_griglia <=ypos_sel_griglia;
 						enablecheck<= '1';
+						user_l<='1';
 					when 9 =>
 						row_count <= 9;
 						ypos_sel_griglia <=ypos_sel_griglia;
+						user_l<='1';
 						enablecheck<= '0';
 				end case;				
-				insert_att <= ATTEMPT;
-				
+				insert_att <= ATTEMPT;				
 			end if;
 	end process;
 
@@ -156,66 +161,8 @@ begin
 		wait until KEY(3)='0' and KEY(3)'EVENT;
 			inizio <= '1';		
 	end process;
-	
-		
---		someKey_press :process 
---		begin 
---		if(RESET_N='0') then
---			counter_sel<= 1;
---			ypos_sel <= 78;
---			selected_color <= COLOR_RED;
---			counter_sel_griglia<= 0;
---			xpos_sel_griglia	<=52;
---			row_count <= 1;
---			ypos_sel_griglia 	<= 24;
---			ENABLE_CHECK <='0';
---		end if;
---		wait until KEY(0)='0' or KEY(1)='0' or KEY(2)='0';
---			if(KEY(0)='0' and KEY(1)='1' and KEY(2)='1') then
---				case counter_sel is
---					when 0=> 
---						ypos_sel <= ypos_sel;
---						selected_color <= COLOR_RED;
---						counter_sel <= counter_sel + 1;
---					when 1 to 7 =>
---						ypos_sel <= ypos_sel + 40;
---						counter_sel <= counter_sel + 1;
---						selected_color <= colors_pals(counter_sel);
---					when 8 =>
---						counter_sel <= 1;
---						ypos_sel <= 78;
---				end case;
---			elsif(KEY(1)='0' and KEY(0)='1' and KEY(2)='1') then 
---				case counter_sel_griglia is
---					when 0 => 
---						xpos_sel_griglia <= 52;
---						counter_sel_griglia <= counter_sel_griglia + 1;				
---					when 1 to 3 =>
---						xpos_sel_griglia <= xpos_sel_griglia + 54;
---						counter_sel_griglia <= counter_sel_griglia + 1;
---					when 4 =>
---						counter_sel_griglia <= 1 ; 
---				end case;			
---			elsif(KEY(2)='0' and KEY(1)='1' and KEY(0)='1') then
---				ENABLE_CHECK<='0';
---				case row_count is 
---					when 0 to 7 => 
---						row_count <= row_count+1;
---						ypos_sel_griglia <= ypos_sel_griglia + 54;
---					when 8 =>
---						row_count <= 9;
---						ypos_sel_griglia <=ypos_sel_griglia;
---					when 9 =>
---						row_count <= 9;
---						ypos_sel_griglia <=ypos_sel_griglia;
---				end case;
---				INSERT_ATTEMPT <= board1.rows(row_count-1);
---				ENABLE_CHECK<= '1';
---			elsif(KEY(3)='0') then
---			
---			end if;
---		end process;
 
+	USER_LOSE<=user_l;
 	INSERT_ATTEMPT <= insert_att;
 	ENABLE_CHECK<=enablecheck;
 	CONTATORE2<=counter_sel_griglia;
