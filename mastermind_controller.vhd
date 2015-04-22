@@ -14,6 +14,7 @@ port
 		HEX1				: out std_logic_vector(6 downto 0);
 		HEX2				: out std_logic_vector(6 downto 0);
 		HEX3				: out std_logic_vector(6 downto 0);
+		SW0            : in  std_logic_vector(0 downto 0);
 		ENABLE_CHECK 	: out std_logic;
 		INSERT_ATTEMPT	: out row;
 		ATTEMPT 			: in row;

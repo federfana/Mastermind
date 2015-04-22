@@ -86,9 +86,6 @@ text_gen : entity work.text_generator
 	   variable DIMX : integer;
 	   variable DIMY : integer;
 	begin
-		if(RESET_N ='0') then
-			
-		end if;
 		if(rising_edge(CLOCK) and CLOCK'EVENT )then
 			if((H_COUNT <= 640) and (V_COUNT<= 480)) then
 				COLOR <= COLOR_BACKGROUND;

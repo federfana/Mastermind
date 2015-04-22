@@ -15,7 +15,7 @@ entity mastermind is
 			HEX1						: out std_logic_vector(6 downto 0);
 			HEX2						: out std_logic_vector(6 downto 0);
 			HEX3						: out std_logic_vector(6 downto 0);
-			SW                 	: in  std_logic_vector(9 downto 9);
+			SW                 	: in  std_logic_vector(0 downto 0);
 			LEDG						: out std_logic_vector(7 downto 0);
 			VGA_R             	: out std_logic_vector(3 downto 0);
 			VGA_G               	: out std_logic_vector(3 downto 0);
@@ -138,6 +138,7 @@ architecture RTL of mastermind is
 			HEX1 					=> HEX1,
 			HEX2 					=> HEX2,
 			HEX3 					=> HEX3,
+			SW0    				=> SW,
 			ATTEMPT				=> attempt,
 			INSERT_ATTEMPT    => insert_attempt,
 			CONTATORE1     	=>contatore1,

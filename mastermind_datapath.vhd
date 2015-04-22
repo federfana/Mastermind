@@ -31,17 +31,14 @@ end entity;
 
 architecture RTL of mastermind_datapath is
 	signal secret_cod		: code;
-	signal check_victory : code;	
+	signal check_victory    : code;	
 	type b 		 is array(3 downto 0) of Boolean;
 
 begin
 	
-	Cod_RTL : process(CLOCK, RESET_N)
+	Cod_RTL : process(CLOCK)
 
 	begin		
-		if(RESET_N = '0')then
-		
-		end if;
 		if(rising_edge(CLOCK))then
 			if(NEW_GAME = '1' and START = '1')then
 				for i in 0 to 3 loop
