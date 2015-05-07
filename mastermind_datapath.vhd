@@ -65,8 +65,9 @@ begin
 		variable black : b;
 		variable white : b;
 	begin
-		
-		if(rising_edge(CLOCK)) then
+		if(RESET_N='0') then
+			USER_VICTORY <= '0';
+		elsif(rising_edge(CLOCK)) then
 		rightPlaceCount :=0;
 		presentCount := 0;
 		CHECK<='0';

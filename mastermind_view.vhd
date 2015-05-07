@@ -42,8 +42,7 @@ architecture RTL of mastermind_view is
 	signal text_on : std_logic_vector(3 downto 0);
 	signal col : color_type;
 begin
-		board1.color 			<= COLOR_BROWN;
-		board2.color			<= COLOR_BROWN;
+		
 		
 SELEZIONATORE_COLORE: entity work.dinamic_selectors
 	port map
@@ -86,7 +85,17 @@ text_gen : entity work.text_generator
 	   variable DIMX : integer;
 	   variable DIMY : integer;
 	begin
-		if(rising_edge(CLOCK) and CLOCK'EVENT )then
+		if(RESET_N='0') then
+			COLOR <= COLOR_BACKGROUND;
+			newgame<='1';
+			board1.color 			<= COLOR_BROWN;
+			board2.color			<= COLOR_BROWN;
+			for i in 0 to (BOARD_ROWS-1) loop
+				for j in 0 to (BOARD_COLUMNS-1) loop
+					board1.rows(i).cells(j).color <= COLOR_RED;
+				end loop;
+			end loop;
+		elsif(rising_edge(CLOCK) and CLOCK'EVENT )then
 			if((H_COUNT <= 640) and (V_COUNT<= 480)) then
 				COLOR <= COLOR_BACKGROUND;
 				if(text_on="0100" and START = '0')then

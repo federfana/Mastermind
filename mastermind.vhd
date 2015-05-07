@@ -15,7 +15,7 @@ entity mastermind is
 			HEX1						: out std_logic_vector(6 downto 0);
 			HEX2						: out std_logic_vector(6 downto 0);
 			HEX3						: out std_logic_vector(6 downto 0);
-			SW                 	: in  std_logic_vector(0 downto 0);
+			SW                 	: in  std_logic_vector(9 downto 9);
 			LEDG						: out std_logic_vector(7 downto 0);
 			VGA_R             	: out std_logic_vector(3 downto 0);
 			VGA_G               	: out std_logic_vector(3 downto 0);
@@ -28,6 +28,7 @@ end;
 architecture RTL of mastermind is
 	signal clock 					: std_logic;
 	signal RESET_N					: std_logic;
+	signal reset_sync_reg     : std_logic;
 	signal clock_25Mhz			: STD_LOGIC;
 	signal color 					: color_type;
 	signal h_count					: integer range 0 to 1000;
@@ -63,6 +64,14 @@ architecture RTL of mastermind is
 				c0 					=> clock,
 				c1						=> clock_25Mhz			
 			);
+	
+	reset_sync : process(CLOCK_50)
+        begin
+                if (rising_edge(CLOCK_50)) then
+                        reset_sync_reg <= SW(9);
+                        RESET_N <= reset_sync_reg;
+                end if;
+        end process;
 	
 	randomNumber : entity work.randomNumber
 			port map(
